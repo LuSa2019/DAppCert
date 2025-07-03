@@ -221,7 +221,7 @@ export default function Home() {
         </section>
       )}
 
-      <footer className="text-center py-4 text-sm text-gray-300 border-t border-gray-600">© 2025 CertifyChain - Tutti i diritti riservati</footer>
+      <footer className="text-center py-4 text-sm text-gray-300 border-t border-gray-600">© 2025 UniChain - Tutti i diritti riservati</footer>
     </main>
   );
 }
