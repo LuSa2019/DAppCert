@@ -7,33 +7,53 @@ import { GraduationCap, Building2, Search } from "lucide-react";
 import registerStudent from "@/app/actions/registerStudent";
 import registerEntity from "@/app/actions/registerEntity";
 
+// Tipizzazione dei dati del form
+type FormData = {
+  // Per entrambi: studente e ente
+  nome?: string;              // Nome persona o nome ente
+  // Solo per studente:
+  cognome?: string;
+  dataNascita?: string;
+  // Sempre
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+
 export default function Home() {
   const [showRegister, setShowRegister] = useState(false);
   const [registerAs, setRegisterAs] = useState<'student' | 'entity' | null>(null);
-  const [formData, setFormData] = useState<any>({});
+  const [formData, setFormData] = useState<FormData>({
+    nome: '',
+    cognome: '',
+    dataNascita: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+  });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Validazione password dinamica
-  const validatePassword = (password: string) => {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
-  };
+  const validatePassword = (password: string) =>
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
 
-  // Validazione mail dinamica
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const validateEmail = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  //Reset form registrazione
   const resetForm = () => {
-    setFormData({});
+    setFormData({
+      nome: '',
+      cognome: '',
+      dataNascita: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    });
     setMessage(null);
   };
 
-
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev: any) => ({
+    setFormData(prev => ({
       ...prev,
       [e.target.name]: e.target.value,
     }));
@@ -44,13 +64,12 @@ export default function Home() {
     setLoading(true);
     setMessage(null);
 
-    //Controllo campi
     if (!validateEmail(formData.email)) {
       setMessage({ type: 'error', text: 'Inserisci un\'email valida' });
       setLoading(false);
-    return;
+      return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       setMessage({ type: 'error', text: 'Le password non coincidono' });
       setLoading(false);
@@ -65,12 +84,22 @@ export default function Home() {
 
     try {
       if (registerAs === 'student') {
-        await registerStudent(formData);
+        await registerStudent({
+          nome: formData.nome!,
+          cognome: formData.cognome!,
+          dataNascita: formData.dataNascita!,
+          email: formData.email,
+          password: formData.password,
+        });
       } else if (registerAs === 'entity') {
-        await registerEntity(formData);
+        await registerEntity({
+          nome: formData.nome!,
+          email: formData.email,
+          password: formData.password,
+        });
       }
       setMessage({ type: 'success', text: 'Registrazione avvenuta con successo!' });
-      setFormData({});
+      resetForm();
     } catch (error: any) {
       setMessage({ type: 'error', text: error.message || 'Errore durante la registrazione' });
     } finally {
@@ -151,40 +180,38 @@ export default function Home() {
         <section className="bg-white text-gray-900 p-6 rounded-xl shadow-xl mx-auto mb-12 w-full max-w-xl">
           <h2 className="text-2xl font-bold mb-4">Registrazione</h2>
 
-            <form className="flex flex-col gap-3 mt-4" onSubmit={handleSubmit}>
-              {registerAs === 'student' && (
-                <>
-                  <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome" className="border p-2 rounded" required />
-                  <input name="cognome" onChange={handleChange} value={formData.cognome || ''} type="text" placeholder="Cognome" className="border p-2 rounded" required />
-                  <input name="dataNascita" onChange={handleChange} value={formData.dataNascita || ''} type="date" placeholder="Data di nascita" className="border p-2 rounded" required />
-                </>
-              )}
-              {registerAs === 'entity' && (
-                <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome Ente" className="border p-2 rounded" required />
-              )}
+          <form className="flex flex-col gap-3 mt-4" onSubmit={handleSubmit}>
+            {registerAs === 'student' && (
+              <>
+                <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome" className="border p-2 rounded" required />
+                <input name="cognome" onChange={handleChange} value={formData.cognome || ''} type="text" placeholder="Cognome" className="border p-2 rounded" required />
+                <input name="dataNascita" onChange={handleChange} value={formData.dataNascita || ''} type="date" placeholder="Data di nascita" className="border p-2 rounded" required />
+              </>
+            )}
+            {registerAs === 'entity' && (
+              <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome Ente" className="border p-2 rounded" required />
+            )}
 
-              <input name="email" onChange={handleChange} value={formData.email || ''} type="email" placeholder="Email" className="border p-2 rounded" required />
-              <input name="password" onChange={handleChange} value={formData.password || ''} type="password" placeholder="Password" className="border p-2 rounded" required />
-              <input name="confirmPassword" onChange={handleChange} value={formData.confirmPassword || ''} type="password" placeholder="Conferma Password" className="border p-2 rounded" required />
+            <input name="email" onChange={handleChange} value={formData.email} type="email" placeholder="Email" className="border p-2 rounded" required />
+            <input name="password" onChange={handleChange} value={formData.password} type="password" placeholder="Password" className="border p-2 rounded" required />
+            <input name="confirmPassword" onChange={handleChange} value={formData.confirmPassword} type="password" placeholder="Conferma Password" className="border p-2 rounded" required />
 
-              {/* Messaggi */}
-              {message && (
-                <div className={`${message.type === 'error' ? 'text-red-600' : 'text-green-600'} text-sm`}>
-                  {message.text}
-                </div>
-              )}
+            {message && (
+              <div className={`${message.type === 'error' ? 'text-red-600' : 'text-green-600'} text-sm`}>
+                {message.text}
+              </div>
+            )}
 
-              <button type="submit" disabled={loading} className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
-                {loading ? 'Registrazione...' : 'Registrati'}
-              </button>
-            </form>
+            <button type="submit" disabled={loading} className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
+              {loading ? 'Registrazione...' : 'Registrati'}
+            </button>
+          </form>
 
           <button
             onClick={() => {
               setShowRegister(false);
               setRegisterAs(null);
-              setFormData({});        // <--- resetta tutti i campi
-              setMessage(null);       // <--- resetta eventuali messaggi di errore/successo
+              resetForm();
             }}
             className="mt-4 text-sm text-gray-600 underline"
           >
