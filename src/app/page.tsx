@@ -99,7 +99,7 @@ export default function Home() {
         });
       }
       setMessage({ type: 'success', text: 'Registrazione avvenuta con successo!' });
-      resetForm();
+      //resetForm();
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       setMessage({ type: 'error', text: message || 'Errore durante la registrazione' });
