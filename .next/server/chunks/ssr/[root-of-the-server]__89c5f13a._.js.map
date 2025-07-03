@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 103, "column": 0}, "map": {"version":3,"sources":["file:///C:/Users/39340/Desktop/Universit%C3%A0/Tesi/DAppCert/verifica-certificati/src/lib/supabaseClient.ts"],"sourcesContent":["import { createClient } from '@supabase/supabase-js';\r\n\r\nconst supabaseUrl = 'https://rygyqxalcvxrekpfkqga.supabase.co';  \r\nconst supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ5Z3lxeGFsY3Z4cmVrcGZrcWdhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0MzM5NjcsImV4cCI6MjA2NjAwOTk2N30.lo2ydzPjibp2nl3W_hnhQNP4od_jprdw4RDVHyXKDJ0';        \r\n\r\nexport const supabase = createClient(supabaseUrl, supabaseAnonKey);\r\n"],"names":[],"mappings":";;;AAAA;;AAEA,MAAM,cAAc;AACpB,MAAM,kBAAkB;AAEjB,MAAM,WAAW,CAAA,GAAA,uLAAA,CAAA,eAAY,AAAD,EAAE,aAAa","debugId":null}}]
+}
