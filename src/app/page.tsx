@@ -10,7 +10,6 @@ import registerEntity from "@/app/actions/registerEntity";
 export default function Home() {
   const [showRegister, setShowRegister] = useState(false);
   const [registerAs, setRegisterAs] = useState<'student' | 'entity' | null>(null);
-  const [registerType, setRegisterType] = useState<'classic' | 'wallet' | null>(null);
   const [formData, setFormData] = useState<any>({});
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -109,7 +108,7 @@ export default function Home() {
           </div>
           <p className="mb-6">Crea, gestisci e assegna certificati accademici.</p>
           <div className="flex flex-col gap-3">
-            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('entity'); setRegisterType(null); }}
+            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('entity'); }}
               className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
               Registrati
             </button>
@@ -127,7 +126,7 @@ export default function Home() {
           </div>
           <p className="mb-6">Consulta e gestisci i tuoi certificati accademici.</p>
           <div className="flex flex-col gap-3">
-            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('student'); setRegisterType(null); }}
+            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('student'); }}
               className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
               Registrati
             </button>
@@ -183,7 +182,6 @@ export default function Home() {
           <button
             onClick={() => {
               setShowRegister(false);
-              setRegisterType(null);
               setRegisterAs(null);
               setFormData({});        // <--- resetta tutti i campi
               setMessage(null);       // <--- resetta eventuali messaggi di errore/successo
