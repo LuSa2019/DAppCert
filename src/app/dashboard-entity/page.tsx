@@ -1,7 +1,7 @@
 // app/dashboard-ente/page.tsx
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { ethers } from "ethers";
 import { getContract } from "@/lib/contract";
 
@@ -23,8 +23,12 @@ export default function EntityDashboard() {
       await tx.wait();
 
       setMessage("Certificato emesso con successo!");
-    } catch (error: any) {
-      setMessage(`Errore: ${error.message}`);
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+          setMessage(`Errore: ${error.message}`);
+        } else {
+          setMessage('Errore sconosciuto');
+        }
     }
   };
 
