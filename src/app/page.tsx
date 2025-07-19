@@ -1,28 +1,27 @@
 'use client';
 
-import { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { GraduationCap, Building2, Search } from "lucide-react";
-import registerStudent from "@/app/actions/registerStudent";
-import registerEntity from "@/app/actions/registerEntity";
+import { useState } from 'react';
+import Image from 'next/image';
+import { GraduationCap, Building2, Search } from 'lucide-react';
+import registerStudent from '@/app/actions/registerStudent';
+import registerEntity from '@/app/actions/registerEntity';
+import loginStudent from '@/app/actions/loginStudent';
+import loginEntity from '@/app/actions/loginEntity';
+import Link from 'next/link';
 
-// Tipizzazione dei dati del form
 type FormData = {
-  // Per entrambi: studente e ente
-  nome?: string;              // Nome persona o nome ente
-  // Solo per studente:
+  nome?: string;
   cognome?: string;
   dataNascita?: string;
-  // Sempre
   email: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
 };
 
+type ActionMode = 'register' | 'login';
+type UserType = 'student' | 'entity';
+
 export default function Home() {
-  const [showRegister, setShowRegister] = useState(false);
-  const [registerAs, setRegisterAs] = useState<'student' | 'entity' | null>(null);
   const [formData, setFormData] = useState<FormData>({
     nome: '',
     cognome: '',
@@ -31,8 +30,12 @@ export default function Home() {
     password: '',
     confirmPassword: '',
   });
+
+  const [userType, setUserType] = useState<UserType | null>(null);
+  const [actionMode, setActionMode] = useState<ActionMode>('register');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [showForm, setShowForm] = useState(false);
 
   const validatePassword = (password: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
@@ -50,6 +53,7 @@ export default function Home() {
       confirmPassword: '',
     });
     setMessage(null);
+    setLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,48 +65,63 @@ export default function Home() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setMessage(null);
+    setLoading(true);
 
     if (!validateEmail(formData.email)) {
-      setMessage({ type: 'error', text: 'Inserisci un\'email valida' });
+      setMessage({ type: 'error', text: 'Email non valida' });
       setLoading(false);
       return;
     }
 
-    if (formData.password !== formData.confirmPassword) {
-      setMessage({ type: 'error', text: 'Le password non coincidono' });
-      setLoading(false);
-      return;
-    }
+    if (actionMode === 'register') {
+      if (formData.password !== formData.confirmPassword) {
+        setMessage({ type: 'error', text: 'Le password non coincidono' });
+        setLoading(false);
+        return;
+      }
 
-    if (!validatePassword(formData.password)) {
-      setMessage({ type: 'error', text: 'La password non rispetta i requisiti di sicurezza (almeno una lettera maiuscola, una minuscola, un carattere speciale, un numero)' });
-      setLoading(false);
-      return;
+      if (!validatePassword(formData.password)) {
+        setMessage({
+          type: 'error',
+          text: 'La password deve contenere almeno 8 caratteri, una maiuscola, una minuscola, un numero e un simbolo.',
+        });
+        setLoading(false);
+        return;
+      }
     }
 
     try {
-      if (registerAs === 'student') {
-        await registerStudent({
-          nome: formData.nome!,
-          cognome: formData.cognome!,
-          dataNascita: formData.dataNascita!,
-          email: formData.email,
-          password: formData.password,
-        });
-      } else if (registerAs === 'entity') {
-        await registerEntity({
-          nome: formData.nome!,
-          email: formData.email,
-          password: formData.password,
-        });
+      if (actionMode === 'register') {
+        if (userType === 'student') {
+          await registerStudent({
+            nome: formData.nome!,
+            cognome: formData.cognome!,
+            dataNascita: formData.dataNascita!,
+            email: formData.email,
+            password: formData.password,
+          });
+        } else {
+          await registerEntity({
+            nome: formData.nome!,
+            email: formData.email,
+            password: formData.password,
+          });
+        }
+        setMessage({ type: 'success', text: 'Registrazione completata con successo!' });
+      } else {
+        if (userType === 'student') {
+          await loginStudent({ email: formData.email, password: formData.password });
+        } else {
+          await loginEntity({ email: formData.email, password: formData.password });
+        }
+        setMessage({ type: 'success', text: 'Login avvenuto con successo!' });
       }
-      setMessage({ type: 'success', text: 'Registrazione avvenuta con successo!' });
-      //resetForm();
+
+      // resetForm();
     } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      setMessage({ type: 'error', text: message || 'Errore durante la registrazione' });
+      const msg = error instanceof Error ? error.message : String(error);
+      setMessage({ type: 'error', text: msg || 'Errore generico.' });
     } finally {
       setLoading(false);
     }
@@ -117,7 +136,9 @@ export default function Home() {
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-lg">
             La tua identità accademica sulla Blockchain
           </h1>
-          <p className="text-lg text-gray-200 mb-4">Registrazione e verifica dei certificati in modo trasparente e sicuro.</p>
+          <p className="text-lg text-gray-200 mb-4">
+            Registrazione e verifica dei certificati in modo trasparente e sicuro.
+          </p>
         </div>
         <Image
           src="https://www.netgroup.it/wp-content/uploads/2023/04/Blockchain-Technology_2.jpg"
@@ -138,13 +159,10 @@ export default function Home() {
           </div>
           <p className="mb-6">Crea, gestisci e assegna certificati accademici.</p>
           <div className="flex flex-col gap-3">
-            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('entity'); }}
-              className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
-              Registrati
-            </button>
-            <Link href="" className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100">
-              Login
-            </Link>
+            <button onClick={() => { resetForm(); setShowForm(true); setUserType('entity'); setActionMode('register'); }}
+              className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">Registrati</button>
+            <button onClick={() => { resetForm(); setShowForm(true); setUserType('entity'); setActionMode('login'); }}
+              className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100">Login</button>
           </div>
         </div>
 
@@ -156,13 +174,10 @@ export default function Home() {
           </div>
           <p className="mb-6">Consulta e gestisci i tuoi certificati accademici.</p>
           <div className="flex flex-col gap-3">
-            <button onClick={() => { resetForm(); setShowRegister(true); setRegisterAs('student'); }}
-              className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
-              Registrati
-            </button>
-            <Link href="" className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100">
-              Login
-            </Link>
+            <button onClick={() => { resetForm(); setShowForm(true); setUserType('student'); setActionMode('register'); }}
+              className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">Registrati</button>
+            <button onClick={() => { resetForm(); setShowForm(true); setUserType('student'); setActionMode('login'); }}
+              className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100">Login</button>
           </div>
         </div>
 
@@ -177,25 +192,28 @@ export default function Home() {
         </div>
       </section>
 
-      {showRegister && (
+      {showForm && (
         <section className="bg-white text-gray-900 p-6 rounded-xl shadow-xl mx-auto mb-12 w-full max-w-xl">
-          <h2 className="text-2xl font-bold mb-4">Registrazione</h2>
+          <h2 className="text-2xl font-bold mb-4">{actionMode === 'register' ? 'Registrazione' : 'Login'} {userType === 'student' ? 'Studente' : 'Ente'}</h2>
 
           <form className="flex flex-col gap-3 mt-4" onSubmit={handleSubmit}>
-            {registerAs === 'student' && (
+            {actionMode === 'register' && userType === 'student' && (
               <>
                 <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome" className="border p-2 rounded" required />
                 <input name="cognome" onChange={handleChange} value={formData.cognome || ''} type="text" placeholder="Cognome" className="border p-2 rounded" required />
-                <input name="dataNascita" onChange={handleChange} value={formData.dataNascita || ''} type="date" placeholder="Data di nascita" className="border p-2 rounded" required />
+                <input name="dataNascita" onChange={handleChange} value={formData.dataNascita || ''} type="date" className="border p-2 rounded" required />
               </>
             )}
-            {registerAs === 'entity' && (
+            {actionMode === 'register' && userType === 'entity' && (
               <input name="nome" onChange={handleChange} value={formData.nome || ''} type="text" placeholder="Nome Ente" className="border p-2 rounded" required />
             )}
 
             <input name="email" onChange={handleChange} value={formData.email} type="email" placeholder="Email" className="border p-2 rounded" required />
             <input name="password" onChange={handleChange} value={formData.password} type="password" placeholder="Password" className="border p-2 rounded" required />
-            <input name="confirmPassword" onChange={handleChange} value={formData.confirmPassword} type="password" placeholder="Conferma Password" className="border p-2 rounded" required />
+
+            {actionMode === 'register' && (
+              <input name="confirmPassword" onChange={handleChange} value={formData.confirmPassword || ''} type="password" placeholder="Conferma Password" className="border p-2 rounded" required />
+            )}
 
             {message && (
               <div className={`${message.type === 'error' ? 'text-red-600' : 'text-green-600'} text-sm`}>
@@ -204,14 +222,14 @@ export default function Home() {
             )}
 
             <button type="submit" disabled={loading} className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">
-              {loading ? 'Registrazione...' : 'Registrati'}
+              {loading ? 'Elaborazione...' : (actionMode === 'register' ? 'Registrati' : 'Accedi')}
             </button>
           </form>
 
           <button
             onClick={() => {
-              setShowRegister(false);
-              setRegisterAs(null);
+              setShowForm(false);
+              setUserType(null);
               resetForm();
             }}
             className="mt-4 text-sm text-gray-600 underline"
