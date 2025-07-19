@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { GraduationCap, Building2, Search } from 'lucide-react';
 import registerStudent from '@/app/actions/registerStudent';
@@ -36,6 +37,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const router = useRouter();
 
   const validatePassword = (password: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(password);
@@ -112,10 +114,14 @@ export default function Home() {
       } else {
         if (userType === 'student') {
           await loginStudent({ email: formData.email, password: formData.password });
+          setMessage({ type: 'success', text: 'Login avvenuto con successo!' });
+          router.push('/dashboard-student');
         } else {
           await loginEntity({ email: formData.email, password: formData.password });
+          setMessage({ type: 'success', text: 'Login avvenuto con successo!' });
+          router.push('/dashboard-entity');
         }
-        setMessage({ type: 'success', text: 'Login avvenuto con successo!' });
+        
       }
 
       // resetForm();
