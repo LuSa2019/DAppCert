@@ -69,7 +69,7 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
 
       // 4. Upload file
       const fileName = `cert-${Date.now()}.pdf`;
-      const { data: uploaded, error: uploadErr } = await supabase.storage
+      const { error: uploadErr } = await supabase.storage
         .from('certificati')
         .upload(fileName, pdfFile);
 
@@ -92,8 +92,12 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
       setStatus('✅ Certificato registrato con successo!');
       setFormData({ studentEmail: '', corso: '', data: '' });
       setPdfFile(null);
-    } catch (err: any) {
-      setStatus(`❌ Errore: ${err.message || String(err)}`);
+    } catch (err) {
+      if (err instanceof Error) {
+        setStatus(`❌ Errore: ${err.message}`);
+      } else {
+        setStatus('❌ Errore sconosciuto');
+      }
     } finally {
       setLoading(false);
     }

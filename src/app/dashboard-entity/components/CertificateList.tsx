@@ -28,7 +28,7 @@ export default function CertificateList({ entityId }: Props) {
       try {
         const data = await getCertificatesByEntity(entityId);
         setCertificates(data);
-      } catch (err) {
+      } catch {
         setError('Errore durante il recupero dei certificati');
       } finally {
         setLoading(false);
