@@ -1,10 +1,20 @@
-// lib/contract.ts
-import { ethers } from "ethers";
+import { getMagicProvider } from '@/lib/magic';
+import { ethers } from 'ethers';
 import { CertificatiABI } from "@/abi/CertificatiABI";
 
-const CONTRACT_ADDRESS = "0xd9145CCE52D386f254917e481eB44e9943F39138"; 
+const CONTRACT_ADDRESS = '0x4c323D7a113edC4dfe9d639E0acFa7f47B722ed4';
 
-// Con Magic o MetaMask collegato
-export function getContract(signerOrProvider: ethers.Signer | ethers.Provider) {
-  return new ethers.Contract(CONTRACT_ADDRESS, CertificatiABI, signerOrProvider);
+export async function aggiungiCertificatoSuChain(hash: string) {
+  const magicProvider = getMagicProvider();
+  if (!magicProvider) throw new Error('Magic provider non disponibile');
+
+  // ethers v5 Web3Provider avvolge il provider Magic senza problemi
+  const provider = new ethers.providers.Web3Provider(magicProvider);
+  const signer = provider.getSigner();
+
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, CertificatiABI, signer);
+  const tx = await contract.aggiungiCertificato(hash);
+  await tx.wait();
+
+  return tx.hash;
 }

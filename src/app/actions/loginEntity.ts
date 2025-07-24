@@ -1,8 +1,38 @@
-'use server';
-
 import { supabase } from '@/lib/supabaseClient';
+import bcrypt from 'bcryptjs';
 
-export default async function loginEntity({ email, password }:{email: string, password: string}) {
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) throw new Error(error.message);
+export default async function loginEntity({
+  email,
+  password
+}: {
+  email: string;
+  password: string;
+}) {
+  const trimmedEmail = email.trim();
+
+  const { data, error } = await supabase
+    .from('entities')
+    .select('id, nome_ente, email, password_hash') // <-- usa il nome corretto del campo
+    .eq('email', trimmedEmail)
+    .single();
+
+  if (error || !data) {
+    throw new Error('Email non trovata');
+  }
+
+  if (!data.password_hash) {
+    console.error('Campo password_hash non trovato nel record:', data);
+    throw new Error('Errore interno: password non presente');
+  }
+
+  const passwordMatch = await bcrypt.compare(password, data.password_hash);
+  if (!passwordMatch) {
+    throw new Error('Password errata');
+  }
+
+  return {
+    id: data.id,
+    nome: data.nome_ente,
+    email: data.email
+  };
 }

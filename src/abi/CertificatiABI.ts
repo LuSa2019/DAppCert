@@ -1,5 +1,18 @@
 export const CertificatiABI = [
 	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			}
+		],
+		"name": "aggiungiCertificato",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -8,25 +21,19 @@ export const CertificatiABI = [
 		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "entity",
-				"type": "address"
-			},
-			{
-				"indexed": true,
-				"internalType": "address",
-				"name": "student",
-				"type": "address"
+				"indexed": false,
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
 			},
 			{
 				"indexed": false,
-				"internalType": "uint256",
-				"name": "certificateId",
-				"type": "uint256"
+				"internalType": "address",
+				"name": "emittente",
+				"type": "address"
 			}
 		],
-		"name": "CertificateIssued",
+		"name": "CertificatoAggiunto",
 		"type": "event"
 	},
 	{
@@ -34,33 +41,23 @@ export const CertificatiABI = [
 		"inputs": [
 			{
 				"indexed": false,
-				"internalType": "address",
-				"name": "entity",
-				"type": "address"
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
 			}
 		],
-		"name": "EntityRegistered",
+		"name": "CertificatoRimosso",
 		"type": "event"
 	},
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "student",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "title",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
 			}
 		],
-		"name": "issueCertificate",
+		"name": "rimuoviCertificato",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -68,140 +65,27 @@ export const CertificatiABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "entity",
-				"type": "address"
-			}
-		],
-		"name": "registerEntity",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
+				"internalType": "bytes32",
 				"name": "",
-				"type": "uint256"
+				"type": "bytes32"
 			}
 		],
-		"name": "certificates",
+		"name": "certificati",
 		"outputs": [
 			{
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
+			},
+			{
 				"internalType": "address",
-				"name": "student",
+				"name": "emittente",
 				"type": "address"
 			},
 			{
-				"internalType": "string",
-				"name": "title",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "description",
-				"type": "string"
-			},
-			{
 				"internalType": "uint256",
-				"name": "issuedAt",
+				"name": "timestamp",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getAllCertificates",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "student",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "title",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "description",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "issuedAt",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct CertificateRegistry.Certificate[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "certId",
-				"type": "uint256"
-			}
-		],
-		"name": "getCertificate",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "address",
-						"name": "student",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "title",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "description",
-						"type": "string"
-					},
-					{
-						"internalType": "uint256",
-						"name": "issuedAt",
-						"type": "uint256"
-					}
-				],
-				"internalType": "struct CertificateRegistry.Certificate",
-				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "student",
-				"type": "address"
-			}
-		],
-		"name": "getStudentCertificates",
-		"outputs": [
-			{
-				"internalType": "uint256[]",
-				"name": "",
-				"type": "uint256[]"
 			}
 		],
 		"stateMutability": "view",
@@ -223,40 +107,26 @@ export const CertificatiABI = [
 	{
 		"inputs": [
 			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
+				"internalType": "bytes32",
+				"name": "hash",
+				"type": "bytes32"
 			}
 		],
-		"name": "registeredEntities",
+		"name": "verificaCertificato",
 		"outputs": [
 			{
 				"internalType": "bool",
-				"name": "",
+				"name": "exists",
 				"type": "bool"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
+			},
 			{
 				"internalType": "address",
-				"name": "",
+				"name": "emittente",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "studentCertificates",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
+				"name": "timestamp",
 				"type": "uint256"
 			}
 		],

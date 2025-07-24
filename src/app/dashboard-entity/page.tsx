@@ -1,58 +1,52 @@
-// app/dashboard-ente/page.tsx
-"use client";
+'use client';
 
-import { useState} from "react";
-import { ethers } from "ethers";
-import { getContract } from "@/lib/contract";
+import { useState } from 'react';
+import { Upload, FileText, LogOut } from 'lucide-react';
+import InsertCertificate from './components/InsertCertificate';
+import CertificateList from './components/CertificateList';
 
 export default function EntityDashboard() {
-  const [studentAddress, setStudentAddress] = useState("");
-  const [title, setTitle] = useState("");
-  const [message, setMessage] = useState("");
+  const [activeTab, setActiveTab] = useState<'insert' | 'list'>('insert');
 
-  const issueCertificate = async () => {
-    try {
-      if (!window.ethereum) throw new Error("Wallet non rilevato");
-
-      const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = await provider.getSigner();
-
-      const contract = getContract(signer);
-
-      const tx = await contract.issueCertificate(studentAddress, title);
-      await tx.wait();
-
-      setMessage("Certificato emesso con successo!");
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-          setMessage(`Errore: ${error.message}`);
-        } else {
-          setMessage('Errore sconosciuto');
-        }
-    }
-  };
+  // TODO: Sostituisci con il vero entityId preso dalla sessione o auth
+  const entityId = 'INSERISCI_QUI_L_ID_ENTE';
 
   return (
-    <div className="p-6 max-w-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Dashboard Ente – Emissione Certificato</h1>
-      <input
-        type="text"
-        placeholder="Indirizzo studente"
-        value={studentAddress}
-        onChange={(e) => setStudentAddress(e.target.value)}
-        className="w-full mb-3 p-2 border rounded"
-      />
-      <input
-        type="text"
-        placeholder="Titolo certificato"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full mb-3 p-2 border rounded"
-      />
-      <button onClick={issueCertificate} className="bg-blue-600 text-white px-4 py-2 rounded">
-        Rilascia Certificato
-      </button>
-      {message && <p className="mt-4 text-sm">{message}</p>}
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-indigo-800 text-white p-6 flex flex-col gap-6">
+        <h2 className="text-2xl font-bold mb-6">UniChain - Ente</h2>
+
+        <button
+          onClick={() => setActiveTab('insert')}
+          className={`flex items-center gap-2 py-2 px-4 rounded-lg ${
+            activeTab === 'insert' ? 'bg-indigo-600' : 'hover:bg-indigo-700'
+          }`}
+        >
+          <Upload size={20} /> Inserisci Certificato
+        </button>
+
+        <button
+          onClick={() => setActiveTab('list')}
+          className={`flex items-center gap-2 py-2 px-4 rounded-lg ${
+            activeTab === 'list' ? 'bg-indigo-600' : 'hover:bg-indigo-700'
+          }`}
+        >
+          <FileText size={20} /> Certificati Emessi
+        </button>
+
+        <div className="mt-auto">
+          <button className="flex items-center gap-2 text-red-300 hover:text-red-100">
+            <LogOut size={20} /> Logout
+          </button>
+        </div>
+      </aside>
+
+      {/* Content */}
+      <main className="flex-1 p-10 bg-gray-100 overflow-y-auto">
+        {activeTab === 'insert' && <InsertCertificate entityId={entityId} />}
+        {activeTab === 'list' && <CertificateList entityId={entityId} />}
+      </main>
     </div>
   );
 }
