@@ -24,7 +24,7 @@ export default function CertificateListStudent() {
       try {
         const data = await getCertificatesByStudent();
         setCertificates(data);
-      } catch (err) {
+      } catch {
         setError('Errore durante il caricamento dei certificati.');
       } finally {
         setLoading(false);

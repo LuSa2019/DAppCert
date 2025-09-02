@@ -33,8 +33,9 @@ export default function EntityDashboard() {
         if (!data) throw new Error('Ente non trovato');
 
         setEntityId(data.id);
-      } catch (err: any) {
-        setError(err.message || 'Errore nel recupero dell’ente');
+      } catch (error) {
+        const msg = error instanceof Error ? error.message : String(error);
+        setError('Errore nel recupero dell’ente');
       } finally {
         setLoading(false);
       }

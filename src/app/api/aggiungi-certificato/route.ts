@@ -53,21 +53,28 @@ export async function POST(req: Request) {
       txHash: tx.hash,
       blockNumber: receipt.blockNumber,
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("❌ Errore API aggiungi-certificato:", err);
 
+    // Cast a oggetto per poter accedere alle proprietà dinamiche
+    const error = err as {
+      revert?: { args?: string[] };
+      shortMessage?: string;
+      message?: string;
+    };
+
     // 👉 Gestione elegante errori di revert ethers v6
-    if (err?.revert?.args?.[0]) {
-      return NextResponse.json({ error: err.revert.args[0] }, { status: 400 });
+    if (error?.revert?.args?.[0]) {
+      return NextResponse.json({ error: error.revert.args[0] }, { status: 400 });
     }
 
-    if (err?.shortMessage) {
-      return NextResponse.json({ error: err.shortMessage }, { status: 400 });
+    if (error?.shortMessage) {
+      return NextResponse.json({ error: error.shortMessage }, { status: 400 });
     }
 
     return NextResponse.json(
-      { error: err?.message ?? "Errore interno" },
+      { error: error?.message ?? "Errore interno" },
       { status: 500 }
     );
-  }
+    }
 }

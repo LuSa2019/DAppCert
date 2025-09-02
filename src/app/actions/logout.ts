@@ -3,5 +3,6 @@
 import { cookies } from 'next/headers';
 
 export default async function logout() {
-  (cookies() as any).delete('uc_session');
+  const cookieStore = await cookies();
+  cookieStore.delete('uc_session');
 }
