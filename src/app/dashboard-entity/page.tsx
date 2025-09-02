@@ -34,7 +34,6 @@ export default function EntityDashboard() {
 
         setEntityId(data.id);
       } catch (error) {
-        const msg = error instanceof Error ? error.message : String(error);
         setError('Errore nel recupero dell’ente');
       } finally {
         setLoading(false);
