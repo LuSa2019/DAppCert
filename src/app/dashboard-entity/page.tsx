@@ -33,7 +33,8 @@ export default function EntityDashboard() {
         if (!data) throw new Error('Ente non trovato');
 
         setEntityId(data.id);
-      } catch (_) {
+      } catch (err: unknown) {
+        console.error("Errore fetchEntity:", err);
         setError('Errore nel recupero dell’ente');
       } finally {
         setLoading(false);
