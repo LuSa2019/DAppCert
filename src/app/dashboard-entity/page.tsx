@@ -33,7 +33,7 @@ export default function EntityDashboard() {
         if (!data) throw new Error('Ente non trovato');
 
         setEntityId(data.id);
-      } catch (error) {
+      } catch (_) {
         setError('Errore nel recupero dell’ente');
       } finally {
         setLoading(false);
