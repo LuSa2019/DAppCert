@@ -1,6 +1,17 @@
 {
   "node": {
-    "400469e3b873b8fab8731c5b2fe2d39b775c4bcaf7": {
+    "40a2fdf599e14021142b756a27ed21bca0ace67250": {
+      "workers": {
+        "app/page": {
+          "moduleId": "[project]/.next-internal/server/app/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/loginStudent.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/page": "action-browser"
+      }
+    },
+    "4009146593d086f9541c47bbd394df152d0ac54185": {
       "workers": {
         "app/dashboard-entity/page": {
           "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
@@ -11,7 +22,7 @@
         "app/dashboard-entity/page": "action-browser"
       }
     },
-    "60734f71ef0226509bdeae312782bcbe4904436c12": {
+    "60586f3441b7247f3fc0baa9cb6d323431066d3b01": {
       "workers": {
         "app/dashboard-entity/page": {
           "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
@@ -21,8 +32,19 @@
       "layer": {
         "app/dashboard-entity/page": "action-browser"
       }
+    },
+    "00817fcfed94993fa3502d13d3ec720e1ed73be92a": {
+      "workers": {
+        "app/dashboard-student/page": {
+          "moduleId": "[project]/.next-internal/server/app/dashboard-student/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/dashboard-student/components/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/dashboard-student/page": "action-browser"
+      }
     }
   },
   "edge": {},
-  "encryptionKey": "w4KiECnATVsug5IrvwfD+8nExCIZM6lcN98w1DhptX0="
+  "encryptionKey": "6Jf8u6AqGpo5OAtV+NQwwQSsPhm5Cnh0tEdQbIj4fdM="
 }

@@ -1,6 +1,6 @@
 {
   "node": {
-    "400469e3b873b8fab8731c5b2fe2d39b775c4bcaf7": {
+    "4009146593d086f9541c47bbd394df152d0ac54185": {
       "workers": {
         "app/dashboard-entity/page": {
           "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
@@ -11,7 +11,7 @@
         "app/dashboard-entity/page": "action-browser"
       }
     },
-    "60734f71ef0226509bdeae312782bcbe4904436c12": {
+    "60586f3441b7247f3fc0baa9cb6d323431066d3b01": {
       "workers": {
         "app/dashboard-entity/page": {
           "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",

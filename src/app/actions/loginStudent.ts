@@ -1,38 +1,47 @@
+'use server';
+
 import { supabase } from '@/lib/supabaseClient';
+import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-export default async function loginEntity({
+export default async function loginStudent({
   email,
-  password
-}: {
-  email: string;
-  password: string;
-}) {
-  const trimmedEmail = email.trim();
-
+  password,
+}: { email: string; password: string }) {
+  // Recupera lo studente per email
   const { data, error } = await supabase
     .from('users')
-    .select('id, nome, email, password_hash') // <-- usa il nome corretto del campo
-    .eq('email', trimmedEmail)
+    .select('id, email, password_hash')
+    .eq('email', email)
     .single();
 
   if (error || !data) {
-    throw new Error('Email non trovata');
+    throw new Error('Studente non trovato');
   }
 
-  if (!data.password_hash) {
-    console.error('Campo password_hash non trovato nel record:', data);
-    throw new Error('Errore interno: password non presente');
-  }
-
+  // Verifica la password con bcrypt
   const passwordMatch = await bcrypt.compare(password, data.password_hash);
   if (!passwordMatch) {
     throw new Error('Password errata');
   }
 
-  return {
-    id: data.id,
-    nome: data.nome,
-    email: data.email
-  };
+  // Salva sessione in cookie
+  const cookieStore = cookies();
+  (cookieStore as any).set(
+    'uc_session',
+    JSON.stringify({
+      type: 'student',
+      id: data.id,
+      email: data.email,
+    }),
+    {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7 giorni
+    }
+  );
+
+  return { id: data.id, email: data.email };
 }

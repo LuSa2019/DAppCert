@@ -1,0 +1,12 @@
+const CHUNK_PUBLIC_PATH = "server/app/api/aggiungi-certificato/route.js";
+const runtime = require("../../../chunks/[turbopack]_runtime.js");
+runtime.loadChunk("server/chunks/node_modules_next_4478a103._.js");
+runtime.loadChunk("server/chunks/node_modules_ethers_lib_esm_abi_cd1b1cd6._.js");
+runtime.loadChunk("server/chunks/node_modules_ethers_lib_esm_providers_b2976d22._.js");
+runtime.loadChunk("server/chunks/node_modules_ethers_lib_esm_bd02b44f._.js");
+runtime.loadChunk("server/chunks/004bd_@noble_curves_esm_1066ec6d._.js");
+runtime.loadChunk("server/chunks/node_modules_a6f4d3db._.js");
+runtime.loadChunk("server/chunks/[root-of-the-server]__1503338a._.js");
+runtime.getOrInstantiateRuntimeModule("[project]/.next-internal/server/app/api/aggiungi-certificato/route/actions.js [app-rsc] (server actions loader, ecmascript)", CHUNK_PUBLIC_PATH);
+runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/api/aggiungi-certificato/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)", CHUNK_PUBLIC_PATH);
+module.exports = runtime.getOrInstantiateRuntimeModule("[project]/node_modules/next/dist/esm/build/templates/app-route.js { INNER_APP_ROUTE => \"[project]/src/app/api/aggiungi-certificato/route.ts [app-route] (ecmascript)\" } [app-route] (ecmascript)", CHUNK_PUBLIC_PATH).exports;

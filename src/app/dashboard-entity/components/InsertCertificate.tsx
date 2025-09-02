@@ -13,12 +13,13 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
   const [formData, setFormData] = useState({
     studentEmail: '',
     corso: '',
+    descrizione: '',
     data: '',
   });
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
@@ -67,14 +68,15 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
       const txHash = await aggiungiCertificatoSuChain(hash);
       setStatus(`✅ Transazione inviata: ${txHash}`);
 
+/*      
       // 4. Upload file
       const fileName = `cert-${Date.now()}.pdf`;
       const { error: uploadErr } = await supabase.storage
         .from('certificati')
         .upload(fileName, pdfFile);
-
+      
       if (uploadErr) throw uploadErr;
-
+    */
       // 5. Inserisci record certificato
       const { error: insertErr } = await supabase
         .from('certificates')
@@ -82,15 +84,16 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
           student_id: studentId,
           entity_id: entityId,
           title: formData.corso,
-          description: '',
+          description: formData.descrizione,
           issued_date: formData.data,
           blockchain_tx: txHash,
+          //file_path: fileName,
         });
 
       if (insertErr) throw insertErr;
 
       setStatus('✅ Certificato registrato con successo!');
-      setFormData({ studentEmail: '', corso: '', data: '' });
+      setFormData({ studentEmail: '', corso: '', descrizione: '', data: '' });
       setPdfFile(null);
     } catch (err) {
       if (err instanceof Error) {
@@ -124,6 +127,15 @@ export default function InsertCertificate({ entityId }: InsertCertificateProps) 
           value={formData.corso}
           onChange={handleChange}
           placeholder="Nome Corso"
+          className="border rounded p-2"
+          required
+        />
+
+        <textarea
+          name="descrizione"
+          value={formData.descrizione}
+          onChange={handleChange}
+          placeholder="Descrizione certificato"
           className="border rounded p-2"
           required
         />

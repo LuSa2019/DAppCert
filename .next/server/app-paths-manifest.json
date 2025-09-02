@@ -1,4 +1,7 @@
 {
+  "/api/aggiungi-certificato/route": "app/api/aggiungi-certificato/route.js",
   "/dashboard-entity/page": "app/dashboard-entity/page.js",
-  "/favicon.ico/route": "app/favicon.ico/route.js"
+  "/dashboard-student/page": "app/dashboard-student/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js",
+  "/page": "app/page.js"
 }

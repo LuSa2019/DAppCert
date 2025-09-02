@@ -1,0 +1,16 @@
+{
+  "node": {
+    "00817fcfed94993fa3502d13d3ec720e1ed73be92a": {
+      "workers": {
+        "app/dashboard-student/page": {
+          "moduleId": "[project]/.next-internal/server/app/dashboard-student/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/dashboard-student/components/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/dashboard-student/page": "action-browser"
+      }
+    }
+  },
+  "edge": {}
+}

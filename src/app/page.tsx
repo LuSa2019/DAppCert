@@ -8,7 +8,6 @@ import registerStudent from '@/app/actions/registerStudent';
 import registerEntity from '@/app/actions/registerEntity';
 import loginStudent from '@/app/actions/loginStudent';
 import loginEntity from '@/app/actions/loginEntity';
-import Link from 'next/link';
 
 type FormData = {
   nome?: string;
@@ -34,6 +33,7 @@ export default function Home() {
   const [userType, setUserType] = useState<UserType | null>(null);
   const [actionMode, setActionMode] = useState<ActionMode>('register');
   const [showForm, setShowForm] = useState(false);
+  const [showVerifyBox, setShowVerifyBox] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const router = useRouter();
@@ -97,17 +97,20 @@ export default function Home() {
       } else {
         if (userType === 'student') {
           await loginStudent({ email: formData.email, password: formData.password });
+          localStorage.setItem("userEmail", formData.email); // 🔑 salvo sessione
           router.push('/dashboard-student');
         } else {
           await loginEntity({ email: formData.email, password: formData.password });
+          localStorage.setItem("userEmail", formData.email); // 🔑 salvo sessione
           router.push('/dashboard-entity');
         }
       }
+
       setTimeout(() => {
         resetForm();
         setShowForm(false);
         setUserType(null);
-      }, 3000); // aspetta 3 secondi
+      }, 3000);
     } catch (error) {
       const msg = error instanceof Error ? error.message : String(error);
       setMessage({ type: 'error', text: msg || 'Errore generico.' });
@@ -119,6 +122,7 @@ export default function Home() {
     <main className="min-h-screen bg-gradient-to-br from-indigo-900 to-blue-700 text-white flex flex-col">
       <header className="p-6 text-center text-5xl md:text-6xl font-extrabold tracking-tight">UniChain</header>
 
+      {/* Hero */}
       <section className="flex flex-col md:flex-row justify-center items-center gap-8 px-6 py-12">
         <div className="max-w-xl text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight drop-shadow-lg">
@@ -126,11 +130,17 @@ export default function Home() {
           </h1>
           <p className="text-lg text-gray-200 mb-4">Registrazione e verifica dei certificati in modo trasparente e sicuro.</p>
         </div>
-        <Image src="https://www.netgroup.it/wp-content/uploads/2023/04/Blockchain-Technology_2.jpg"
-          alt="Blockchain" width={600} height={400}
-          className="rounded-xl shadow-2xl object-cover" priority />
+        <Image
+          src="https://www.netgroup.it/wp-content/uploads/2023/04/Blockchain-Technology_2.jpg"
+          alt="Blockchain"
+          width={600}
+          height={400}
+          className="rounded-xl shadow-2xl object-cover"
+          priority
+        />
       </section>
 
+      {/* Cards */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6 px-8 py-12 text-center">
         {['entity', 'student'].map(type => (
           <div key={type} className="bg-white text-gray-900 rounded-2xl p-6 shadow-xl">
@@ -144,23 +154,38 @@ export default function Home() {
                 : 'Crea, gestisci e assegna certificati accademici.'}
             </p>
             <div className="flex flex-col gap-3">
-              <button onClick={() => { resetForm(); setShowForm(true); setUserType(type as UserType); setActionMode('register'); }}
-                className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800">Registrati</button>
-              <button onClick={() => { resetForm(); setShowForm(true); setUserType(type as UserType); setActionMode('login'); }}
-                className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100">Login</button>
+              <button
+                onClick={() => { resetForm(); setShowForm(true); setUserType(type as UserType); setActionMode('register'); }}
+                className="bg-indigo-700 text-white py-2 px-4 rounded-lg hover:bg-indigo-800"
+              >
+                Registrati
+              </button>
+              <button
+                onClick={() => { resetForm(); setShowForm(true); setUserType(type as UserType); setActionMode('login'); }}
+                className="border border-indigo-700 text-indigo-700 py-2 px-4 rounded-lg hover:bg-indigo-100"
+              >
+                Login
+              </button>
             </div>
           </div>
         ))}
 
+        {/* Verifica certificati */}
         <div className="bg-white text-gray-900 rounded-2xl p-6 shadow-xl">
           <div className="flex items-center justify-center gap-2 mb-3 text-green-600">
             <Search size={32} /><h2 className="text-3xl font-bold">Verifica</h2>
           </div>
           <p className="mb-6">Inserisci l&apos;ID del certificato per verificarne l&apos;autenticità.</p>
-          <Link href="/verify" className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700">Verifica Certificato</Link>
+          <button
+            onClick={() => setShowVerifyBox(true)}
+            className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
+          >
+            Verifica Certificato
+          </button>
         </div>
       </section>
 
+      {/* Form Login/Register */}
       {showForm && (
         <section className="bg-white text-gray-900 p-6 rounded-xl shadow-xl mx-auto mb-12 w-full max-w-xl">
           <h2 className="text-2xl font-bold mb-4">
@@ -197,6 +222,24 @@ export default function Home() {
           </form>
 
           <button onClick={() => { setShowForm(false); resetForm(); }} className="mt-4 text-sm text-gray-600 underline">
+            Annulla
+          </button>
+        </section>
+      )}
+
+      {/* Box verifica */}
+      {showVerifyBox && (
+        <section className="bg-white text-gray-900 p-6 rounded-xl shadow-xl mx-auto mb-12 w-full max-w-xl">
+          <h2 className="text-2xl font-bold mb-4">Verifica Certificato</h2>
+
+          <form className="flex flex-col gap-4">
+            <input type="text" placeholder="Incolla il link del certificato" className="border p-2 rounded" />
+            <div className="text-center text-gray-500">oppure</div>
+            <input type="file" accept=".pdf" className="border p-2 rounded" />
+            <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Verifica</button>
+          </form>
+
+          <button onClick={() => setShowVerifyBox(false)} className="mt-4 text-sm text-gray-600 underline">
             Annulla
           </button>
         </section>
