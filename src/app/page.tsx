@@ -260,7 +260,7 @@ export default function Home() {
                 } else {
                   setMessage({ type: 'error', text: '❌ Certificato non trovato.' });
                 }
-              } catch (error) {
+              } catch (err: unknown) {
                 setMessage({ type: 'error', text: 'Errore durante la verifica.' });
               }
             }}
