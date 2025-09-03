@@ -99,9 +99,10 @@ const supabase = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_module
 
 var { g: global, __dirname } = __turbopack_context__;
 {
-/* __next_internal_action_entry_do_not_use__ [{"4009146593d086f9541c47bbd394df152d0ac54185":"getCertificatesByEntity","60586f3441b7247f3fc0baa9cb6d323431066d3b01":"deleteCertificate"},"",""] */ __turbopack_context__.s({
+/* __next_internal_action_entry_do_not_use__ [{"4009146593d086f9541c47bbd394df152d0ac54185":"getCertificatesByEntity","4049cbb9dc8df1d9a266aac6f7b38db8b9e1de766e":"getCertificatesByStudent","60586f3441b7247f3fc0baa9cb6d323431066d3b01":"deleteCertificate"},"",""] */ __turbopack_context__.s({
     "deleteCertificate": (()=>deleteCertificate),
-    "getCertificatesByEntity": (()=>getCertificatesByEntity)
+    "getCertificatesByEntity": (()=>getCertificatesByEntity),
+    "getCertificatesByStudent": (()=>getCertificatesByStudent)
 });
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/build/webpack/loaders/next-flight-loader/server-reference.js [app-rsc] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$app$2d$render$2f$encryption$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/app-render/encryption.js [app-rsc] (ecmascript)");
@@ -129,7 +130,7 @@ async function getCertificatesByEntity(entityId) {
     if (error) {
         throw new Error(error.message);
     }
-    const certificates = data.map((cert)=>{
+    return data.map((cert)=>{
         const student = Array.isArray(cert.users) ? cert.users[0] : cert.users;
         return {
             id: cert.id,
@@ -141,11 +142,41 @@ async function getCertificatesByEntity(entityId) {
             student_name: student ? `${student.nome} ${student.cognome}` : 'N/A'
         };
     });
-    return certificates;
+}
+async function getCertificatesByStudent(studentId) {
+    if (!studentId) throw new Error('ID studente mancante');
+    const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabaseClient$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('certificates').select(`
+      id,
+      title,
+      description,
+      issued_date,
+      blockchain_tx,
+      entities:entity_id (
+        nome_ente,
+        email
+      )
+    `).eq('student_id', studentId).order('issued_date', {
+        ascending: false
+    });
+    if (error) {
+        throw new Error(error.message);
+    }
+    return data.map((cert)=>{
+        const entity = Array.isArray(cert.entities) ? cert.entities[0] : cert.entities;
+        return {
+            id: cert.id,
+            title: cert.title,
+            description: cert.description,
+            issued_date: cert.issued_date,
+            blockchain_tx: cert.blockchain_tx,
+            entity_name: entity?.nome_ente ?? 'N/A',
+            entity_email: entity?.email ?? 'N/A'
+        };
+    });
 }
 async function deleteCertificate(id, entityId) {
     if (!id || !entityId) throw new Error('ID certificato o ente mancante');
-    const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabaseClient$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('certificates').delete().eq('id', id).eq('entity_id', entityId); // sicurezza: l'ente può cancellare solo i propri certificati
+    const { error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabaseClient$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('certificates').delete().eq('id', id).eq('entity_id', entityId);
     if (error) {
         throw new Error(error.message);
     }
@@ -153,9 +184,11 @@ async function deleteCertificate(id, entityId) {
 ;
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([
     getCertificatesByEntity,
+    getCertificatesByStudent,
     deleteCertificate
 ]);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getCertificatesByEntity, "4009146593d086f9541c47bbd394df152d0ac54185", null);
+(0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(getCertificatesByStudent, "4049cbb9dc8df1d9a266aac6f7b38db8b9e1de766e", null);
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$server$2d$reference$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["registerServerReference"])(deleteCertificate, "60586f3441b7247f3fc0baa9cb6d323431066d3b01", null);
 }}),
 "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript) <locals>": ((__turbopack_context__) => {

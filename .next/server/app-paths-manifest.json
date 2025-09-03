@@ -1,4 +1,5 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/aggiungi-certificato/route": "app/api/aggiungi-certificato/route.js",
   "/dashboard-entity/page": "app/dashboard-entity/page.js",
   "/dashboard-student/page": "app/dashboard-student/page.js",

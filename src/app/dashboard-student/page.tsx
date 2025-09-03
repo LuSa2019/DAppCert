@@ -1,86 +1,81 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { getCertificatesByStudent } from './components/certificateActions';
-import { FileText, Link as LinkIcon } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
+import StudentCertificateList from './components/StudentCertificateList';
+import { useRouter } from 'next/navigation';
 
-type Certificate = {
-  id: string;
-  title: string;
-  description: string;
-  issued_date: string;
-  blockchain_tx: string;
-  hash: string;
-};
-
-export default function CertificateListStudent() {
-  const [certificates, setCertificates] = useState<Certificate[]>([]);
+export default function StudentDashboard() {
+  const [studentId, setStudentId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
-    const fetchCertificates = async () => {
+    const fetchStudent = async () => {
       try {
-        const data = await getCertificatesByStudent();
-        setCertificates(data);
-      } catch {
-        setError('Errore durante il caricamento dei certificati.');
+        setLoading(true);
+
+        // Recupera email salvata al login
+        const email = localStorage.getItem('userEmail');
+        if (!email) throw new Error('Nessuna email trovata in sessione');
+
+        // Recupera ID dello studente
+        const { data, error: studentErr } = await supabase
+          .from('users')
+          .select('id')
+          .eq('email', email)
+          .single();
+
+        if (studentErr) throw studentErr;
+        if (!data) throw new Error('Studente non trovato');
+
+        setStudentId(data.id);
+      } catch (err: unknown) {
+        console.error('Errore fetchStudent:', err);
+        setError('Errore nel recupero dello studente');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCertificates();
+    fetchStudent();
   }, []);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    localStorage.removeItem('userEmail'); // 🔑 pulizia
+    router.push('/'); // 🔑 redirect alla home
+  };
+
   if (loading) {
-    return <p className="text-gray-700">Caricamento certificati in corso...</p>;
+    return <div className="p-4 text-gray-100">⏳ Caricamento...</div>;
   }
 
   if (error) {
-    return <p className="text-red-600">{error}</p>;
+    return <div className="p-4 text-red-200">❌ {error}</div>;
+  }
+
+  if (!studentId) {
+    return <div className="p-4 text-red-200">❌ Nessuno studente associato a questo account</div>;
   }
 
   return (
-    <section className="mt-10 px-6">
-      <h2 className="text-2xl font-bold text-indigo-800 mb-6">I tuoi certificati</h2>
-
-      {certificates.length === 0 ? (
-        <div className="bg-yellow-100 text-yellow-800 px-4 py-3 rounded-md shadow">
-          Nessun certificato presente.
+    <div className="min-h-screen bg-gradient-to-br from-indigo-700 to-indigo-900 py-10 px-6">
+      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-indigo-700">Dashboard Studente</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+          >
+            🚪 Logout
+          </button>
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {certificates.map(cert => (
-            <div
-              key={cert.id}
-              className="bg-white rounded-xl p-5 shadow-md border border-gray-200"
-            >
-              <div className="flex items-center gap-2 mb-2 text-indigo-700">
-                <FileText />
-                <h3 className="text-lg font-semibold">{cert.title}</h3>
-              </div>
 
-              <p className="text-gray-700 mb-2">{cert.description}</p>
-              <p className="text-sm text-gray-500 mb-3">
-                Emesso il: {new Date(cert.issued_date).toLocaleDateString()}
-              </p>
-
-              <div className="flex items-center gap-2">
-                <LinkIcon className="text-green-600" size={18} />
-                <Link
-                  href={`/verify?hash=${cert.hash}`}
-                  target="_blank"
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  Verifica certificato
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </section>
+        {/* Lista certificati legata allo studentId */}
+        <StudentCertificateList studentId={studentId} />
+      </div>
+    </div>
   );
 }

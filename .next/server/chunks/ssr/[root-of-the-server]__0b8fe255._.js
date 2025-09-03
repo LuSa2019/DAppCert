@@ -114,18 +114,18 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 ;
 ;
 async function loginStudent({ email, password }) {
-    // Recupera lo studente per email
+    // Recupero utente
     const { data, error } = await __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$supabaseClient$2e$ts__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["supabase"].from('users').select('id, email, password_hash').eq('email', email).single();
     if (error || !data) {
-        throw new Error('Studente non trovato');
+        throw new Error('Credenziali non valide per studente');
     }
-    // Verifica la password con bcrypt
+    // Verifica password
     const passwordMatch = await __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$bcryptjs$2f$index$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["default"].compare(password, data.password_hash);
     if (!passwordMatch) {
         throw new Error('Password errata');
     }
-    // Salva sessione in cookie
-    const cookieStore = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cookies"])();
+    // ✅ cookies() NON è async → niente await
+    const cookieStore = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$headers$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["cookies"])();
     cookieStore.set('uc_session', JSON.stringify({
         type: 'student',
         id: data.id,
@@ -137,10 +137,7 @@ async function loginStudent({ email, password }) {
         path: '/',
         maxAge: 60 * 60 * 24 * 7
     });
-    return {
-        id: data.id,
-        email: data.email
-    };
+    return data;
 }
 ;
 (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$webpack$2f$loaders$2f$next$2d$flight$2d$loader$2f$action$2d$validate$2e$js__$5b$app$2d$rsc$5d$__$28$ecmascript$29$__["ensureServerEntryExports"])([

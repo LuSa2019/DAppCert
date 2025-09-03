@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import { GraduationCap, Building2, Search } from 'lucide-react';
 import registerStudent from '@/app/actions/registerStudent';
@@ -232,14 +233,65 @@ export default function Home() {
         <section className="bg-white text-gray-900 p-6 rounded-xl shadow-xl mx-auto mb-12 w-full max-w-xl">
           <h2 className="text-2xl font-bold mb-4">Verifica Certificato</h2>
 
-          <form className="flex flex-col gap-4">
-            <input type="text" placeholder="Incolla il link del certificato" className="border p-2 rounded" />
-            <div className="text-center text-gray-500">oppure</div>
-            <input type="file" accept=".pdf" className="border p-2 rounded" />
-            <button type="submit" className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Verifica</button>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.target as HTMLFormElement;
+              const input = form.querySelector<HTMLInputElement>('input');
+              const txId = input?.value.trim();
+
+              if (!txId) {
+                setMessage({ type: 'error', text: 'Inserisci un ID valido.' });
+                return;
+              }
+
+              try {
+                const { data, error } = await supabase
+                  .from('certificates')
+                  .select('id')
+                  .eq('blockchain_tx', txId)
+                  .maybeSingle();
+
+                if (error) throw error;
+
+                if (data) {
+                  setMessage({ type: 'success', text: '✅ Certificato valido!' });
+                } else {
+                  setMessage({ type: 'error', text: '❌ Certificato non trovato.' });
+                }
+              } catch (err) {
+                setMessage({ type: 'error', text: 'Errore durante la verifica.' });
+              }
+            }}
+          >
+            <input
+              type="text"
+              placeholder="Incolla l'id del certificato"
+              className="border p-2 rounded"
+            />
+            <button
+              type="submit"
+              className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+            >
+              Verifica
+            </button>
           </form>
 
-          <button onClick={() => setShowVerifyBox(false)} className="mt-4 text-sm text-gray-600 underline">
+          {message && (
+            <p
+              className={`mt-3 text-sm ${
+                message.type === 'success' ? 'text-green-600' : 'text-red-600'
+              }`}
+            >
+              {message.text}
+            </p>
+          )}
+
+          <button
+            onClick={() => setShowVerifyBox(false)}
+            className="mt-4 text-sm text-gray-600 underline"
+          >
             Annulla
           </button>
         </section>

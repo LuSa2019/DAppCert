@@ -33,10 +33,10 @@
         "app/dashboard-entity/page": "action-browser"
       }
     },
-    "00817fcfed94993fa3502d13d3ec720e1ed73be92a": {
+    "4049cbb9dc8df1d9a266aac6f7b38db8b9e1de766e": {
       "workers": {
         "app/dashboard-student/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard-student/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/dashboard-student/components/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
+          "moduleId": "[project]/.next-internal/server/app/dashboard-student/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
           "async": false
         }
       },

@@ -366,23 +366,25 @@ async function POST(req) {
         });
     } catch (err) {
         console.error("❌ Errore API aggiungi-certificato:", err);
+        // Cast a oggetto per poter accedere alle proprietà dinamiche
+        const error = err;
         // 👉 Gestione elegante errori di revert ethers v6
-        if (err?.revert?.args?.[0]) {
+        if (error?.revert?.args?.[0]) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: err.revert.args[0]
+                error: error.revert.args[0]
             }, {
                 status: 400
             });
         }
-        if (err?.shortMessage) {
+        if (error?.shortMessage) {
             return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-                error: err.shortMessage
+                error: error.shortMessage
             }, {
                 status: 400
             });
         }
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
-            error: err?.message ?? "Errore interno"
+            error: error?.message ?? "Errore interno"
         }, {
             status: 500
         });
