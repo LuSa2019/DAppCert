@@ -57,7 +57,7 @@ export default function StudentCertificateList({ studentId }: Props) {
   );
 
   const handleCopy = (tx: string) => {
-    navigator.clipboard.writeText(`https://sepolia.etherscan.io/tx/${tx}`);
+    navigator.clipboard.writeText(`${tx}`);
     alert('🔗 Link copiato negli appunti!');
   };
 
