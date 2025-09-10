@@ -201,7 +201,7 @@ export default function Home() {
           </div>
           <p className="mb-6">Inserisci l&apos;ID del certificato per verificarne l&apos;autenticità.</p>
           <button
-            onClick={() => { resetForm();setShowVerifyBox(true)}}
+            onClick={() => { resetForm(); setShowVerifyBox(true)}}
             className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
           >
             Verifica Certificato
