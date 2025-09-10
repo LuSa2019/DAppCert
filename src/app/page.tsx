@@ -39,6 +39,27 @@ export default function Home() {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const router = useRouter();
 
+  type MessageStateV =
+  | { type: "error"; text: string }
+  | {
+      type: "success";
+      text: string;
+      cert: {
+        title: string;
+        description: string;
+        data_rilascio: string;
+        ente: string;
+        studente: string;
+        nascita: string;
+      };
+    };
+
+
+  const [messageV, setMessageV] = useState<MessageStateV | null>(null);
+
+  
+
+
   const validatePassword = (pw: string) =>
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/.test(pw);
   const validateEmail = (email: string) =>
@@ -47,6 +68,8 @@ export default function Home() {
   const resetForm = () => {
     setFormData({ nome: '', cognome: '', dataNascita: '', email: '', password: '', confirmPassword: '' });
     setMessage(null);
+    setShowVerifyBox(false); 
+    setMessageV(null);          
     setLoading(false);
   };
 
@@ -178,7 +201,7 @@ export default function Home() {
           </div>
           <p className="mb-6">Inserisci l&apos;ID del certificato per verificarne l&apos;autenticità.</p>
           <button
-            onClick={() => setShowVerifyBox(true)}
+            onClick={() => { resetForm();setShowVerifyBox(true)}}
             className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700"
           >
             Verifica Certificato
@@ -242,27 +265,55 @@ export default function Home() {
               const txId = input?.value.trim();
 
               if (!txId) {
-                setMessage({ type: 'error', text: 'Inserisci un ID valido.' });
+                setMessage({ type: "error", text: "Inserisci un ID valido." });
                 return;
               }
 
               try {
-                const { data, error } = await supabase
-                  .from('certificates')
-                  .select('id')
-                  .eq('blockchain_tx', txId)
+                // 1. Cerco il certificato
+                const { data: cert, error: certErr } = await supabase
+                  .from("certificates")
+                  .select("*")
+                  .eq("blockchain_tx", txId)
                   .maybeSingle();
 
-                if (error) throw error;
+                if (certErr) throw certErr;
 
-                if (data) {
-                  setMessage({ type: 'success', text: '✅ Certificato valido!' });
-                } else {
-                  setMessage({ type: 'error', text: '❌ Certificato non trovato.' });
+                if (!cert) {
+                  setMessage({ type: "error", text: "❌ Certificato non trovato." });
+                  return;
                 }
+
+                // 2. Cerco studente
+                const { data: stud } = await supabase
+                  .from("users")
+                  .select("nome, cognome, data_nascita")
+                  .eq("id", cert.student_id)
+                  .single();
+
+                // 3. Cerco ente
+                const { data: ent } = await supabase
+                  .from("entities")
+                  .select("nome_ente")
+                  .eq("id", cert.entity_id)
+                  .single();
+
+                // 4. Mostro risultato
+                setMessageV({
+                  type: "success",
+                  text: "✅ Certificato valido!",
+                  cert: {
+                    title: cert.title,
+                    description: cert.description,
+                    data_rilascio: cert.issued_date,
+                    ente: ent?.nome_ente ?? "N/A",
+                    studente: stud ? `${stud.nome} ${stud.cognome}` : "N/A",
+                    nascita: stud?.data_nascita ?? "N/A",
+                  },
+                }); 
               } catch (err) {
                 console.error(err);
-                setMessage({ type: 'error', text: 'Errore durante la verifica.' });
+                setMessage({ type: "error", text: "Errore durante la verifica." });
               }
             }}
           >
@@ -279,24 +330,39 @@ export default function Home() {
             </button>
           </form>
 
-          {message && (
-            <p
-              className={`mt-3 text-sm ${
-                message.type === 'success' ? 'text-green-600' : 'text-red-600'
-              }`}
-            >
-              {message.text}
-            </p>
+          {messageV && (
+            <div className="mt-4">
+              <p
+                className={`text-sm ${
+                  messageV.type === "success" ? "text-green-600" : "text-red-600"
+                }`}
+              >
+                {messageV.text}
+              </p>
+
+              {messageV.type === "success" && (
+                <div className="bg-gray-100 p-3 rounded-lg text-gray-800 mt-3">
+                  <p><strong>Titolo:</strong> {messageV.cert.title}</p>
+                  <p><strong>Descrizione:</strong> {messageV.cert.description}</p>
+                  <p><strong>Data rilascio:</strong> {messageV.cert.data_rilascio}</p>
+                  <p><strong>Ente:</strong> {messageV.cert.ente}</p>
+                  <p><strong>Studente:</strong> {messageV.cert.studente}</p>
+                  <p><strong>Data di nascita:</strong> {messageV.cert.nascita}</p>
+                </div>
+              )}
+            </div>
           )}
 
-          <button
-            onClick={() => setShowVerifyBox(false)}
-            className="mt-4 text-sm text-gray-600 underline"
-          >
-            Annulla
-          </button>
-        </section>
+           <button
+              onClick={() => {setShowVerifyBox(false); resetForm(); }} 
+              className="mt-4 text-sm text-gray-600 underline"
+            >
+              Annulla
+            </button>
+          </section>
       )}
+
+
 
       <footer className="text-center py-4 text-sm text-gray-300 border-t border-gray-600">
         © 2025 UniChain - Tutti i diritti riservati

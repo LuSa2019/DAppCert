@@ -10,39 +10,6 @@
       "layer": {
         "app/page": "action-browser"
       }
-    },
-    "4009146593d086f9541c47bbd394df152d0ac54185": {
-      "workers": {
-        "app/dashboard-entity/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/dashboard-entity/page": "action-browser"
-      }
-    },
-    "60586f3441b7247f3fc0baa9cb6d323431066d3b01": {
-      "workers": {
-        "app/dashboard-entity/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard-entity/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/dashboard-entity/page": "action-browser"
-      }
-    },
-    "4049cbb9dc8df1d9a266aac6f7b38db8b9e1de766e": {
-      "workers": {
-        "app/dashboard-student/page": {
-          "moduleId": "[project]/.next-internal/server/app/dashboard-student/page/actions.js { ACTIONS_MODULE0 => \"[project]/src/app/actions/certificateActions.ts [app-rsc] (ecmascript)\" } [app-rsc] (server actions loader, ecmascript)",
-          "async": false
-        }
-      },
-      "layer": {
-        "app/dashboard-student/page": "action-browser"
-      }
     }
   },
   "edge": {},
